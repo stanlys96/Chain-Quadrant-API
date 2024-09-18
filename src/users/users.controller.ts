@@ -1,28 +1,32 @@
 import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Get all users that have registered' })
   @Get()
   fetchUsers(): any {
     return this.usersService.getAllUsers();
   }
 
+  @ApiOperation({ summary: 'Register user by email' })
   @Post()
   registerUser(@Body() body): any {
     const { referenceId, email } = body;
     return this.usersService.registerUser(referenceId, email);
   }
 
+  @ApiOperation({ summary: "Get user's wallet address" })
   @Get('/wallet-address/:referenceId')
   getUserWalletAddress(@Param('referenceId') referenceId: string): any {
     return this.usersService.getUserWalletAddress(referenceId);
   }
 
+  @ApiOperation({ summary: 'Get the item details of a user' })
   @Get('/:referenceId/items/:itemId')
   getUserItemDetails(
     @Param('referenceId') referenceId: string,
@@ -31,6 +35,9 @@ export class UsersController {
     return this.usersService.getUserItemDetails(referenceId, itemId);
   }
 
+  @ApiOperation({
+    summary: 'Transfer an item/currency from one user to another',
+  })
   @Post('/:referenceId/items/:itemId/transfer')
   transferItem(
     @Param('referenceId') referenceId: string,
