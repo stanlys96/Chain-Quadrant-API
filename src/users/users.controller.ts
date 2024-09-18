@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { CreateUserDto, TransferItemDto } from './users.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -15,7 +16,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Register user by email' })
   @Post()
-  registerUser(@Body() body): any {
+  registerUser(@Body() body: CreateUserDto): any {
     const { referenceId, email } = body;
     return this.usersService.registerUser(referenceId, email);
   }
@@ -42,7 +43,7 @@ export class UsersController {
   transferItem(
     @Param('referenceId') referenceId: string,
     @Param('itemId') itemId: string,
-    @Body() body,
+    @Body() body: TransferItemDto,
   ): any {
     const { destinationUserReferenceId, quantity } = body;
     return this.usersService.transferItem(
