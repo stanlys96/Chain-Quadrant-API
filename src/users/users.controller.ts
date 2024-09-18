@@ -22,7 +22,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: "Get user's wallet address" })
-  @Get('/wallet-address/:referenceId')
+  @Get('/:referenceId/wallet-address')
   getUserWalletAddress(@Param('referenceId') referenceId: string): any {
     return this.usersService.getUserWalletAddress(referenceId);
   }
