@@ -7,7 +7,9 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class ItemsController {
   constructor(private readonly itemsService: ItemsService) {}
 
-  @ApiOperation({ summary: 'Get all items that have been registered' })
+  @ApiOperation({
+    summary: 'Get all items and currencies that have been registered',
+  })
   @Get()
   fetchItems(): any {
     return this.itemsService.getAllItems();
