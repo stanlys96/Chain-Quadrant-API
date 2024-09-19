@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { ItemsModule } from './items/items.module';
 import { CurrenciesModule } from './currencies/currencies.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { CryptoService } from './crypto/crypto.service';
 
 @Module({
   imports: [
@@ -17,5 +18,6 @@ import { TransactionsModule } from './transactions/transactions.module';
     CurrenciesModule,
     TransactionsModule,
   ],
+  providers: [CryptoService],
 })
 export class AppModule {}

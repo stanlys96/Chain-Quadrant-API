@@ -116,3 +116,18 @@ export class UserTransferDto {
   })
   consentUrl: string;
 }
+
+export class CreateSolanaAddressDto {
+  @ApiProperty({
+    description: 'The public key of the wallet address',
+    example: 'fca54f7e-4f9d-4f05-8b16-85b5d7689552',
+  })
+  publicKey: string;
+
+  @ApiProperty({
+    description: 'The private key of the wallet address',
+    example:
+      'https://app.gameshift.dev/consent?transaction=fca54f7e-4f9d-4f05-8b16-85b5d7689552',
+  })
+  privateKey: string;
+}

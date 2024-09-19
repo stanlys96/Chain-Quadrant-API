@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   AllUsersDto,
+  CreateSolanaAddressDto,
   CreateUserDto,
   TransferItemDto,
   UserItemDto,
@@ -86,5 +87,18 @@ export class UsersController {
       destinationUserReferenceId,
       quantity,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Create a solana wallet address',
+  })
+  @Post('/create-solana-address')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns the transaction ID and consent url',
+    type: CreateSolanaAddressDto,
+  })
+  createSolanaAddress(): any {
+    return this.usersService.createSolanaAddress();
   }
 }

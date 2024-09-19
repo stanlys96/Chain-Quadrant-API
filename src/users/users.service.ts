@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { catchError, map, of } from 'rxjs';
+import { Keypair } from '@solana/web3.js';
+import { CryptoService } from '../crypto/crypto.service';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +19,7 @@ export class UsersService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly cryptoService: CryptoService,
   ) {}
 
   getAllUsers() {
@@ -43,6 +46,7 @@ export class UsersService {
           }),
         );
     } catch (error) {
+      console.log(error);
       return {
         message: 'error',
       };
@@ -95,5 +99,24 @@ export class UsersService {
           return of(error?.response?.data ?? { message: 'error' });
         }),
       );
+  }
+
+  createSolanaAddress() {
+    const keypair = Keypair.generate();
+    // const theRealPrivateKey = Keypair.fromSecretKey(keypair.secretKey);
+    const encryptedPrivateKey = this.cryptoService.encrypt(
+      keypair.secretKey.toString(),
+    );
+    const decryptedPrivateKey = this.cryptoService.decrypt(encryptedPrivateKey);
+    const walletDetails = {
+      publicKey: keypair.publicKey.toBase58(),
+      privateKey: encryptedPrivateKey,
+    };
+
+    return {
+      ...walletDetails,
+      original: keypair.secretKey.toString(),
+      decryptedPrivateKey: decryptedPrivateKey,
+    };
   }
 }
