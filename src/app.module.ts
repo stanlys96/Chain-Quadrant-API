@@ -21,11 +21,11 @@ import { User } from './users/entities/user.entity';
     TransactionsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'junction.proxy.rlwy.net', // Remote database host
-      port: 31516, // Default PostgreSQL port
-      username: 'postgres', // Database username
-      password: 'JxUFsTprLQrbylVMlxfQcHIpMomhktcp', // Database password
-      database: 'railway', // Database name
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT ?? '0'), // Default PostgreSQL port
+      username: process.env.DATABASE_USERNAME, // Database username
+      password: process.env.DATABASE_PASSWORD, // Database password
+      database: process.env.DATABASE_DB, // Database name
       entities: [__dirname + '/**/*.entity{.ts,.js}'], // Entities location
       synchronize: true, // Set to false in production
     }),
