@@ -26,12 +26,16 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.2",
+    "@nestjs/typeorm": "^10.0.2",
     "@solana/web3.js": "^1.95.3",
     "axios": "^1.7.7",
+    "base-58": "^0.0.1",
     "crypto-js": "^4.2.0",
+    "pg": "^8.13.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

@@ -5,6 +5,7 @@ import {
   AllUsersDto,
   CreateSolanaAddressDto,
   CreateUserDto,
+  SendSolDto,
   TransferItemDto,
   UserItemDto,
   UserRegisterDto,
@@ -93,12 +94,19 @@ export class UsersController {
     summary: 'Create a solana wallet address',
   })
   @Post('/create-solana-address')
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Returns the transaction ID and consent url',
-    type: CreateSolanaAddressDto,
-  })
-  createSolanaAddress(): any {
+  // @ApiResponse({
+  //   status: HttpStatus.OK,
+  //   description: 'Returns the transaction ID and consent url',
+  //   type: CreateSolanaAddressDto,
+  // })
+  createSolanaAddress(@Body() body: any): any {
+    const { email, referenceId } = body;
     return this.usersService.createSolanaAddress();
+  }
+
+  @Post('/send-sol')
+  sendSolanaToAnotherAddress(@Body() body: SendSolDto): any {
+    const { amount } = body;
+    return this.usersService.sendToAnotherUser(amount);
   }
 }

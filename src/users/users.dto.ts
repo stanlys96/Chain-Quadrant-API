@@ -131,3 +131,10 @@ export class CreateSolanaAddressDto {
   })
   privateKey: string;
 }
+
+export class SendSolDto {
+  @ApiProperty({
+    description: 'The amount to send',
+  })
+  amount: number;
+}
