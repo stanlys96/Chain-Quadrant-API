@@ -9,18 +9,21 @@ export interface EncryptResponse {
 @Injectable()
 export class CryptoService {
   private readonly algorithm = 'aes-256-cbc';
-  private readonly secretKey = crypto.randomBytes(32);
-  private readonly iv = crypto.randomBytes(16);
+  private readonly secretKey = Buffer.from(
+    '301d442626b6b43e0f447ec7dc812b504d45f0b2ef5cb133ee083565df6cd704',
+    'hex',
+  );
+  private readonly iv = '2d8ac51ed599af436445e82df190a4a0';
 
   encrypt(text: string): string {
     const cipher = crypto.createCipheriv(
       this.algorithm,
       Buffer.from(this.secretKey),
-      this.iv,
+      Buffer.from(this.iv, 'hex'),
     );
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return `${this.iv.toString('hex')}:${encrypted.toString('hex')}`;
+    return `${this.iv}:${encrypted.toString('hex')}`;
   }
 
   decrypt(hash: string): string {
