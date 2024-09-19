@@ -107,7 +107,7 @@ export class UsersService {
     const encryptedPrivateKey = this.cryptoService.encrypt(
       keypair.secretKey.toString(),
     );
-    const decryptedPrivateKey = this.cryptoService.decrypt(encryptedPrivateKey);
+    // const decryptedPrivateKey = this.cryptoService.decrypt(encryptedPrivateKey);
     const walletDetails = {
       publicKey: keypair.publicKey.toBase58(),
       privateKey: encryptedPrivateKey,
@@ -115,8 +115,6 @@ export class UsersService {
 
     return {
       ...walletDetails,
-      original: keypair.secretKey.toString(),
-      decryptedPrivateKey: decryptedPrivateKey,
     };
   }
 }
