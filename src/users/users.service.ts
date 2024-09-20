@@ -13,9 +13,13 @@ import {
 } from '@solana/web3.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from '../crypto/crypto.service';
-import { encode, decode } from 'base-58';
+import { encode } from 'base-58';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+
+function stringToArrayOfNumbers(input: string): number[] {
+  return input.split(',').map(Number);
+}
 
 @Injectable()
 export class UsersService {
@@ -117,7 +121,7 @@ export class UsersService {
 
   createSolanaAddress() {
     const keypair = Keypair.generate();
-
+    // console.log(keypair);
     // const theRealPrivateKey = Keypair.fromSecretKey(keypair.secretKey);
     const encryptedPrivateKey = this.cryptoService.encrypt(
       keypair.secretKey.toString(),
@@ -146,35 +150,44 @@ export class UsersService {
     };
   }
 
-  async airdropSOL() {
+  async airdropSOL(walletAddress: string) {
     const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     const airdropSignature = await connection.requestAirdrop(
-      new PublicKey('4uwct427oD3RVLKAq4Rh3bBnbt78EH2r6XDBV95kSmzB'),
+      new PublicKey(walletAddress),
       1e9, // 1 SOL (1e9 lamports = 1 SOL)
     );
     await connection.confirmTransaction(airdropSignature);
-    console.log(`Airdropped 1 SOL to the sender's wallet`);
-    return airdropSignature;
+    console.log(`Airdropped 1 SOL to ${walletAddress}`);
+    return { signature: airdropSignature, walletAddress: walletAddress };
   }
 
-  async sendToAnotherUser(amount: number) {
+  async sendToAnotherUser(
+    amount: number,
+    fromPublic: string,
+    fromPrivate: string,
+    toPublic: string,
+  ) {
     const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-    const publicKey = new PublicKey(
-      '4uwct427oD3RVLKAq4Rh3bBnbt78EH2r6XDBV95kSmzB',
-    );
+    const publicKey = new PublicKey(fromPublic);
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: publicKey,
-        toPubkey: new PublicKey('DWdSJiiokFcmNTNEwrgwVhUjaScsKxkpCeUk8Nm4obAr'),
+        toPubkey: new PublicKey(toPublic),
         lamports: amount * 1e9,
       }),
     );
-    const privateKey = decode(
-      '3S7TBvHXFioNdmu9E1Z185is26hKy2G4vS3YRuxo8TrHUnxoMeBoimeqSC59V53Gkiadipx6izEw5MYWK1SupuCw',
+    const decryptedPrivateKey = Uint8Array.from(
+      stringToArrayOfNumbers(this.cryptoService.decrypt(fromPrivate)),
     );
+    // console.log(decryptedPrivateKey, '<<< PRIVATE KEY');
+    // console.log(decryptedPrivateKey);
+    // const privateKeyBytes = Uint8Array.from(keypair.secretKey);
+    // const privateKey = decode(
+    //   '3S7TBvHXFioNdmu9E1Z185is26hKy2G4vS3YRuxo8TrHUnxoMeBoimeqSC59V53Gkiadipx6izEw5MYWK1SupuCw',
+    // );
     const sender = {
       publicKey: publicKey,
-      secretKey: privateKey,
+      secretKey: decryptedPrivateKey,
     };
     const signature = await sendAndConfirmTransaction(connection, transaction, [
       sender,
@@ -183,5 +196,21 @@ export class UsersService {
     return {
       transactionId: signature,
     };
+  }
+
+  async getWalletBalance(walletAddress: string) {
+    // Create a connection to the Solana cluster (mainnet, testnet, or devnet)
+    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+    // Create a PublicKey object from the wallet address string
+    const publicKey = new PublicKey(walletAddress);
+
+    // Get the balance (in lamports)
+    const balance = await connection.getBalance(publicKey);
+
+    // Convert balance from lamports to SOL
+    const balanceInSOL = balance / 1e9; // 1 SOL = 1 billion lamports
+
+    return { balance: balanceInSOL, walletAddress };
   }
 }

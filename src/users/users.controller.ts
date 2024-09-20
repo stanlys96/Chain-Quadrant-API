@@ -2,8 +2,9 @@ import { Controller, Post, Get, Body, Param, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
+  WalletAddressDto,
   AllUsersDto,
-  CreateSolanaAddressDto,
+  // CreateSolanaAddressDto,
   CreateUserDto,
   SendSolDto,
   TransferItemDto,
@@ -99,14 +100,29 @@ export class UsersController {
   //   description: 'Returns the transaction ID and consent url',
   //   type: CreateSolanaAddressDto,
   // })
-  createSolanaAddress(@Body() body: any): any {
-    const { email, referenceId } = body;
+  createSolanaAddress(): any {
     return this.usersService.createSolanaAddress();
   }
 
   @Post('/send-sol')
   sendSolanaToAnotherAddress(@Body() body: SendSolDto): any {
-    const { amount } = body;
-    return this.usersService.sendToAnotherUser(amount);
+    const { amount, fromPublic, fromPrivate, toPublic } = body;
+    return this.usersService.sendToAnotherUser(
+      amount,
+      fromPublic,
+      fromPrivate,
+      toPublic,
+    );
+  }
+
+  @Post('/airdrop-sol')
+  airdropSolana(@Body() body: WalletAddressDto): any {
+    const { walletAddress } = body;
+    return this.usersService.airdropSOL(walletAddress);
+  }
+
+  @Get('/wallet-balance/:walletAddress')
+  checkWalletBalance(@Param('walletAddress') walletAddress: string): any {
+    return this.usersService.getWalletBalance(walletAddress);
   }
 }

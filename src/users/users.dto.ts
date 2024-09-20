@@ -137,4 +137,26 @@ export class SendSolDto {
     description: 'The amount to send',
   })
   amount: number;
+
+  @ApiProperty({
+    description: 'The public address of the sender',
+  })
+  fromPublic: string;
+
+  @ApiProperty({
+    description: 'The private key of the sender',
+  })
+  fromPrivate: string;
+
+  @ApiProperty({
+    description: 'The public address of the receiver',
+  })
+  toPublic: string;
+}
+
+export class WalletAddressDto {
+  @ApiProperty({
+    description: 'The wallet address of the receiving airdrop',
+  })
+  walletAddress: string;
 }
