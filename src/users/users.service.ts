@@ -143,10 +143,11 @@ export class UsersService {
     newUser.private_key = encryptedPrivateKey;
     this.userRepository.save(newUser);
     return {
-      ...walletDetails,
-      privateKey: keypair.secretKey.toString(),
+      publicKey: keypair.publicKey.toBase58(),
+      // privateKey: keypair.secretKey.toString(),
       base58PrivateKey,
-      decryptedPrivateKey,
+      // decryptedPrivateKey,
+      // encryptedPrivateKey,
     };
   }
 
@@ -157,7 +158,7 @@ export class UsersService {
       1e9, // 1 SOL (1e9 lamports = 1 SOL)
     );
     await connection.confirmTransaction(airdropSignature);
-    console.log(`Airdropped 1 SOL to ${walletAddress}`);
+    // console.log(`Airdropped 1 SOL to ${walletAddress}`);
     return { signature: airdropSignature, walletAddress: walletAddress };
   }
 
@@ -192,7 +193,7 @@ export class UsersService {
     const signature = await sendAndConfirmTransaction(connection, transaction, [
       sender,
     ]);
-    console.log(`Transaction confirmed with signature: ${signature}`);
+    // console.log(`Transaction confirmed with signature: ${signature}`);
     return {
       transactionId: signature,
     };
