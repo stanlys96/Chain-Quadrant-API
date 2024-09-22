@@ -198,18 +198,22 @@ export class UsersService {
   }
 
   async getWalletBalance(walletAddress: string) {
-    // Create a connection to the Solana cluster (mainnet, testnet, or devnet)
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+    try {
+      // Create a connection to the Solana cluster (mainnet, testnet, or devnet)
+      const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
-    // Create a PublicKey object from the wallet address string
-    const publicKey = new PublicKey(walletAddress);
+      // Create a PublicKey object from the wallet address string
+      const publicKey = new PublicKey(walletAddress);
 
-    // Get the balance (in lamports)
-    const balance = await connection.getBalance(publicKey);
+      // Get the balance (in lamports)
+      const balance = await connection.getBalance(publicKey);
 
-    // Convert balance from lamports to SOL
-    const balanceInSOL = balance / 1e9; // 1 SOL = 1 billion lamports
+      // Convert balance from lamports to SOL
+      const balanceInSOL = balance / 1e9; // 1 SOL = 1 billion lamports
 
-    return { balance: balanceInSOL, walletAddress };
+      return { status: 200, balance: balanceInSOL, walletAddress };
+    } catch (e) {
+      return { status: 404, message: e.toString().replace('Error ', '') };
+    }
   }
 }

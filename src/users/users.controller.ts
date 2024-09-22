@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, Param, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  HttpStatus,
+  Res,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
@@ -122,7 +130,11 @@ export class UsersController {
   }
 
   @Get('/wallet-balance/:walletAddress')
-  checkWalletBalance(@Param('walletAddress') walletAddress: string): any {
-    return this.usersService.getWalletBalance(walletAddress);
+  async checkWalletBalance(
+    @Param('walletAddress') walletAddress: string,
+    @Res() res: any,
+  ): Promise<any> {
+    const response = await this.usersService.getWalletBalance(walletAddress);
+    res.status(response.status).send(response);
   }
 }
