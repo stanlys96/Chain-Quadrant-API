@@ -168,33 +168,41 @@ export class UsersService {
     fromPrivate: string,
     toPublic: string,
   ) {
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-    const publicKey = new PublicKey(fromPublic);
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: publicKey,
-        toPubkey: new PublicKey(toPublic),
-        lamports: amount * 1e9,
-      }),
-    );
-    // const decryptedPrivateKey = Uint8Array.from(
-    //   stringToArrayOfNumbers(this.cryptoService.decrypt(fromPrivate)),
-    // );
-    // console.log(decryptedPrivateKey, '<<< PRIVATE KEY');
-    // console.log(decryptedPrivateKey);
-    // const privateKeyBytes = Uint8Array.from(keypair.secretKey);
-    const privateKey = decode(fromPrivate);
-    const sender = {
-      publicKey: publicKey,
-      secretKey: privateKey,
-    };
-    const signature = await sendAndConfirmTransaction(connection, transaction, [
-      sender,
-    ]);
-    // console.log(`Transaction confirmed with signature: ${signature}`);
-    return {
-      transactionId: signature,
-    };
+    try {
+      const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+      const publicKey = new PublicKey(fromPublic);
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: new PublicKey(toPublic),
+          lamports: amount * 1e9,
+        }),
+      );
+      // const decryptedPrivateKey = Uint8Array.from(
+      //   stringToArrayOfNumbers(this.cryptoService.decrypt(fromPrivate)),
+      // );
+      // console.log(decryptedPrivateKey, '<<< PRIVATE KEY');
+      // console.log(decryptedPrivateKey);
+      // const privateKeyBytes = Uint8Array.from(keypair.secretKey);
+      const privateKey = decode(fromPrivate);
+      const sender = {
+        publicKey: publicKey,
+        secretKey: privateKey,
+      };
+      const signature = await sendAndConfirmTransaction(
+        connection,
+        transaction,
+        [sender],
+      );
+      // console.log(`Transaction confirmed with signature: ${signature}`);
+      return {
+        status: 200,
+        transactionId: signature,
+      };
+    } catch (e) {
+      console.log(e, '<<< E');
+      return { status: 404, message: e?.toString()?.replace('Error ', '') };
+    }
   }
 
   async getWalletBalance(walletAddress: string) {
@@ -213,7 +221,7 @@ export class UsersService {
 
       return { status: 200, balance: balanceInSOL, walletAddress };
     } catch (e) {
-      return { status: 404, message: e.toString().replace('Error ', '') };
+      return { status: 404, message: e?.toString()?.replace('Error ', '') };
     }
   }
 }
