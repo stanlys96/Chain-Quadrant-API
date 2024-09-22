@@ -113,14 +113,18 @@ export class UsersController {
   }
 
   @Post('/send-sol')
-  sendSolanaToAnotherAddress(@Body() body: SendSolDto): any {
+  async sendSolanaToAnotherAddress(
+    @Body() body: SendSolDto,
+    @Res() res: any,
+  ): Promise<any> {
     const { amount, fromPublic, fromPrivate, toPublic } = body;
-    return this.usersService.sendToAnotherUser(
+    const response = await this.usersService.sendToAnotherUser(
       amount,
       fromPublic,
       fromPrivate,
       toPublic,
     );
+    res.status(response.status).send(response);
   }
 
   @Post('/airdrop-sol')
