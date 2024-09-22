@@ -124,7 +124,7 @@ export class UsersController {
       fromPrivate,
       toPublic,
     );
-    res.status(response.status).send(response);
+    res.status(response?.status).send(response);
   }
 
   @Post('/airdrop-sol')
@@ -139,6 +139,6 @@ export class UsersController {
     @Res() res: any,
   ): Promise<any> {
     const response = await this.usersService.getWalletBalance(walletAddress);
-    res.status(response.status).send(response);
+    res.status(response?.status).send(response);
   }
 }
