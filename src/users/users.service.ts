@@ -13,7 +13,7 @@ import {
 } from '@solana/web3.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from '../crypto/crypto.service';
-import { encode } from 'base-58';
+import { encode, decode } from 'base-58';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 
@@ -177,18 +177,16 @@ export class UsersService {
         lamports: amount * 1e9,
       }),
     );
-    const decryptedPrivateKey = Uint8Array.from(
-      stringToArrayOfNumbers(this.cryptoService.decrypt(fromPrivate)),
-    );
+    // const decryptedPrivateKey = Uint8Array.from(
+    //   stringToArrayOfNumbers(this.cryptoService.decrypt(fromPrivate)),
+    // );
     // console.log(decryptedPrivateKey, '<<< PRIVATE KEY');
     // console.log(decryptedPrivateKey);
     // const privateKeyBytes = Uint8Array.from(keypair.secretKey);
-    // const privateKey = decode(
-    //   '3S7TBvHXFioNdmu9E1Z185is26hKy2G4vS3YRuxo8TrHUnxoMeBoimeqSC59V53Gkiadipx6izEw5MYWK1SupuCw',
-    // );
+    const privateKey = decode(fromPrivate);
     const sender = {
       publicKey: publicKey,
-      secretKey: decryptedPrivateKey,
+      secretKey: privateKey,
     };
     const signature = await sendAndConfirmTransaction(connection, transaction, [
       sender,
