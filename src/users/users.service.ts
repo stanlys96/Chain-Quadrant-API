@@ -178,7 +178,10 @@ export class UsersService {
         walletAddress: walletAddress,
       };
     } catch (e) {
-      return { status: 404, message: e?.toString()?.replace('Error ', '') };
+      return {
+        status: 404,
+        message: e?.toString()?.replace('Error', '')?.replace(':', '')?.trim(),
+      };
     }
   }
 
@@ -226,7 +229,10 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e, '<<< E');
-      return { status: 404, message: e?.toString()?.replace('Error ', '') };
+      return {
+        status: 404,
+        message: e?.toString()?.replace('Error', '')?.replace(':', '')?.trim(),
+      };
     }
   }
 
@@ -246,7 +252,10 @@ export class UsersService {
 
       return { status: 200, balance: balanceInSOL, walletAddress };
     } catch (e) {
-      return { status: 404, message: e?.toString()?.replace('Error ', '') };
+      return {
+        status: 404,
+        message: e?.toString()?.replace('Error', '')?.replace(':', '')?.trim(),
+      };
     }
   }
 
