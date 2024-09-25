@@ -1,21 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User {
+export class Airdrop {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  email: string;
+  address: string;
 
   @Column()
-  public_key: string;
+  signature: string;
 
-  @Column()
-  private_key: string;
-
-  @Column()
-  reference_id: string;
+  @Column({ type: 'float' })
+  amount: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

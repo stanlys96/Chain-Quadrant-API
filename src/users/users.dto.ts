@@ -160,3 +160,15 @@ export class WalletAddressDto {
   })
   walletAddress: string;
 }
+
+export class KeyPairDto {
+  @ApiProperty({
+    description: 'The wallet address of the receiving airdrop',
+  })
+  privateKey: string;
+
+  @ApiProperty({
+    description: 'The wallet address of the receiving airdrop',
+  })
+  publicKey: string;
+}

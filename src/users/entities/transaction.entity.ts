@@ -1,21 +1,21 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class User {
+export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  email: string;
+  from_address: string;
 
   @Column()
-  public_key: string;
+  to_address: string;
 
   @Column()
-  private_key: string;
+  transaction_id: string;
 
-  @Column()
-  reference_id: string;
+  @Column({ type: 'float' })
+  amount: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

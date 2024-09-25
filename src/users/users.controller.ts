@@ -20,6 +20,7 @@ import {
   UserRegisterDto,
   UserTransferDto,
   UserWalletDto,
+  KeyPairDto,
 } from './users.dto';
 
 @ApiTags('Users')
@@ -141,4 +142,10 @@ export class UsersController {
     const response = await this.usersService.getWalletBalance(walletAddress);
     res.status(response?.status).send(response);
   }
+
+  // @Post('/decoding')
+  // async decodingKeys(@Body() body: KeyPairDto) {
+  //   const { privateKey, publicKey } = body;
+  //   const response = await this.usersService.decoding(publicKey, privateKey);
+  // }
 }
