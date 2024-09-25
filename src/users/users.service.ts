@@ -158,20 +158,28 @@ export class UsersService {
   }
 
   async airdropSOL(walletAddress: string) {
-    const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
-    const airdropSignature = await connection.requestAirdrop(
-      new PublicKey(walletAddress),
-      1e9, // 1 SOL (1e9 lamports = 1 SOL)
-    );
-    const airdrop = new Airdrop();
+    try {
+      const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+      const airdropSignature = await connection.requestAirdrop(
+        new PublicKey(walletAddress),
+        1e9, // 1 SOL (1e9 lamports = 1 SOL)
+      );
+      const airdrop = new Airdrop();
 
-    await connection.confirmTransaction(airdropSignature);
-    // console.log(`Airdropped 1 SOL to ${walletAddress}`);
-    airdrop.address = walletAddress;
-    airdrop.amount = 1;
-    airdrop.signature = airdropSignature;
-    this.airdropRepository.save(airdrop);
-    return { signature: airdropSignature, walletAddress: walletAddress };
+      await connection.confirmTransaction(airdropSignature);
+      // console.log(`Airdropped 1 SOL to ${walletAddress}`);
+      airdrop.address = walletAddress;
+      airdrop.amount = 1;
+      airdrop.signature = airdropSignature;
+      this.airdropRepository.save(airdrop);
+      return {
+        status: 200,
+        signature: airdropSignature,
+        walletAddress: walletAddress,
+      };
+    } catch (e) {
+      return { status: 404, message: e?.toString()?.replace('Error ', '') };
+    }
   }
 
   async sendToAnotherUser(
