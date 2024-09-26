@@ -109,8 +109,9 @@ export class UsersController {
   //   description: 'Returns the transaction ID and consent url',
   //   type: CreateSolanaAddressDto,
   // })
-  createSolanaAddress(): any {
-    return this.usersService.createSolanaAddress();
+  async createSolanaAddress(@Res() res: any): Promise<any> {
+    const response = await this.usersService.createSolanaAddress();
+    res.status(response?.status).send(response);
   }
 
   @Post('/send-sol')

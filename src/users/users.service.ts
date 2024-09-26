@@ -10,6 +10,7 @@ import {
   SystemProgram,
   sendAndConfirmTransaction,
   Transaction as TransactionSolana,
+  Cluster,
 } from '@solana/web3.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CryptoService } from '../crypto/crypto.service';
@@ -27,6 +28,7 @@ function stringToArrayOfNumbers(input: string): number[] {
 export class UsersService {
   apiUrl = this.configService.get<string>('API_URL') + '/users';
   apiKey = this.configService.get<string>('API_KEY');
+  mode: Cluster = 'testnet';
 
   headers = {
     accept: 'application/json',
@@ -126,40 +128,49 @@ export class UsersService {
   }
 
   createSolanaAddress() {
-    const keypair = Keypair.generate();
-    console.log(keypair);
-    // const theRealPrivateKey = Keypair.fromSecretKey(keypair.secretKey);
-    const encryptedPrivateKey = this.cryptoService.encrypt(
-      keypair.secretKey.toString(),
-    );
-    const decryptedPrivateKey = this.cryptoService.decrypt(encryptedPrivateKey);
-    const walletDetails = {
-      publicKey: keypair.publicKey.toBase58(),
-      privateKey: encryptedPrivateKey,
-    };
-    // Convert the decimal array to a Uint8Array
-    const privateKeyBytes = Uint8Array.from(keypair.secretKey);
+    try {
+      const keypair = Keypair.generate();
 
-    // Encode the byte array into Base58
-    const base58PrivateKey = encode(privateKeyBytes);
-    const newUser = new User();
-    newUser.email = '';
-    newUser.reference_id = '';
-    newUser.public_key = keypair.publicKey.toBase58();
-    newUser.private_key = encryptedPrivateKey;
-    this.userRepository.save(newUser);
-    return {
-      publicKey: keypair.publicKey.toBase58(),
-      // privateKey: keypair.secretKey.toString(),
-      base58PrivateKey,
-      // decryptedPrivateKey,
-      // encryptedPrivateKey,
-    };
+      // const theRealPrivateKey = Keypair.fromSecretKey(keypair.secretKey);
+      const encryptedPrivateKey = this.cryptoService.encrypt(
+        keypair.secretKey.toString(),
+      );
+      const decryptedPrivateKey =
+        this.cryptoService.decrypt(encryptedPrivateKey);
+      const walletDetails = {
+        publicKey: keypair.publicKey.toBase58(),
+        privateKey: encryptedPrivateKey,
+      };
+      // Convert the decimal array to a Uint8Array
+      const privateKeyBytes = Uint8Array.from(keypair.secretKey);
+
+      // Encode the byte array into Base58
+      const base58PrivateKey = encode(privateKeyBytes);
+      const newUser = new User();
+      newUser.email = '';
+      newUser.reference_id = '';
+      newUser.public_key = keypair.publicKey.toBase58();
+      newUser.private_key = encryptedPrivateKey;
+      this.userRepository.save(newUser);
+      return {
+        status: 201,
+        publicKey: keypair.publicKey.toBase58(),
+        // privateKey: keypair.secretKey.toString(),
+        base58PrivateKey,
+        // decryptedPrivateKey,
+        // encryptedPrivateKey,
+      };
+    } catch (e) {
+      return {
+        status: 404,
+        message: e?.toString()?.replace('Error', '')?.replace(':', '')?.trim(),
+      };
+    }
   }
 
   async airdropSOL(walletAddress: string) {
     try {
-      const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+      const connection = new Connection(clusterApiUrl(this.mode), 'confirmed');
 
       const airdropSignature = await connection.requestAirdrop(
         new PublicKey(walletAddress),
@@ -176,6 +187,7 @@ export class UsersService {
         status: 200,
         signature: airdropSignature,
         walletAddress: walletAddress,
+        transactionUrl: `https://solscan.io/tx/${airdropSignature}?cluster=${this.mode}`,
       };
     } catch (e) {
       return {
@@ -192,7 +204,7 @@ export class UsersService {
     toPublic: string,
   ) {
     try {
-      const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+      const connection = new Connection(clusterApiUrl(this.mode), 'confirmed');
       const publicKey = new PublicKey(fromPublic);
       const transaction = new TransactionSolana().add(
         SystemProgram.transfer({
@@ -226,9 +238,9 @@ export class UsersService {
       return {
         status: 200,
         transactionId: signature,
+        transactionUrl: `https://solscan.io/tx/${signature}?cluster=${this.mode}`,
       };
     } catch (e) {
-      console.log(e, '<<< E');
       return {
         status: 404,
         message: e?.toString()?.replace('Error', '')?.replace(':', '')?.trim(),
@@ -239,7 +251,7 @@ export class UsersService {
   async getWalletBalance(walletAddress: string) {
     try {
       // Create a connection to the Solana cluster (mainnet, testnet, or devnet)
-      const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+      const connection = new Connection(clusterApiUrl(this.mode), 'confirmed');
 
       // Create a PublicKey object from the wallet address string
       const publicKey = new PublicKey(walletAddress);
