@@ -6,9 +6,10 @@ import { CryptoService } from '../crypto/crypto.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Transaction } from './entities/transaction.entity';
+import { Airdrop } from './entities/airdrop.entity';
 
 @Module({
-  imports: [HttpModule, TypeOrmModule.forFeature([User, Transaction])],
+  imports: [HttpModule, TypeOrmModule.forFeature([User, Transaction, Airdrop])],
   controllers: [UsersController],
   providers: [UsersService, CryptoService],
 })

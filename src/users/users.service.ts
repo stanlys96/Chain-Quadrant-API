@@ -42,7 +42,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
-    @InjectRepository(Transaction)
+    @InjectRepository(Airdrop)
     private readonly airdropRepository: Repository<Airdrop>,
   ) {}
 
@@ -160,14 +160,14 @@ export class UsersService {
   async airdropSOL(walletAddress: string) {
     try {
       const connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
+
       const airdropSignature = await connection.requestAirdrop(
         new PublicKey(walletAddress),
         1e9, // 1 SOL (1e9 lamports = 1 SOL)
       );
-      const airdrop = new Airdrop();
-
       await connection.confirmTransaction(airdropSignature);
       // console.log(`Airdropped 1 SOL to ${walletAddress}`);
+      const airdrop = new Airdrop();
       airdrop.address = walletAddress;
       airdrop.amount = 1;
       airdrop.signature = airdropSignature;

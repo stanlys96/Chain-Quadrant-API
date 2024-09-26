@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('airdrop')
 export class Airdrop {
   @PrimaryGeneratedColumn()
   id: number;
